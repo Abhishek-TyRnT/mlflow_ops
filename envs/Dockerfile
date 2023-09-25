@@ -12,9 +12,11 @@ RUN pip install -r requirements.txt
 RUN apt-get update && \
     apt-get install sudo && \
     useradd -m -u $UID $USERNAME && \
-    usermod -aG sudo mlflow
+    usermod -aG sudo $USERNAME
 
 RUN mkdir /logs && \ 
-    chgrp -R 1001 /logs
+    chgrp -R $UID /logs
 
+USER $USERNAME
+ENV HOME=/home/$USERNAME
 
