@@ -1,3 +1,5 @@
 blinker==1.4
 mlflow==2.7.0
 tensorboard==2.14.0
+opencv-python==4.8.0.76
+kaggle
