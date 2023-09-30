@@ -21,7 +21,6 @@ run()
 {
     
     result=$(docker ps -a)
-    #echo $result
     if [[ $result == *"$container_name"* ]]; 
     then
         docker start -i $container_name

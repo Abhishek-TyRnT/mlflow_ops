@@ -11,6 +11,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 RUN apt-get update && \
+    apt-get install ffmpeg libsm6 libxext6  -y && \
     apt-get install sudo && \
     useradd -m -u $UID $USERNAME && \
     echo "${USERNAME}:${PASS}" | chpasswd && \
