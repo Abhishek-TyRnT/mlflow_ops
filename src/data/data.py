@@ -12,6 +12,16 @@ def search_files(folder_path, file_extension):
 
 def image_generator(data_dir, classes, input_shape, randomize = True, seed_value = 400, get_cls = True, augment = False):
 
+    if isinstance(data_dir, bytes):
+        data_dir = data_dir.decode('utf-8')
+    
+    if isinstance(classes, np.ndarray):
+        classes = list(classes)
+    
+    if isinstance(classes[0], bytes):
+        for i in range(len(classes)):
+            classes[i] = classes[i].decode('utf-8')
+
     np.random.seed(seed=seed_value)
     image_files = search_files(data_dir, ".jpg")
     one_hot = np.identity(len(classes))
@@ -45,3 +55,21 @@ def image_generator(data_dir, classes, input_shape, randomize = True, seed_value
                 rot_image_1=tfa.image.rotate(image_1,angles=rot_shift)
 
                 yield rot_image_1/255.0, ground_truth
+
+
+def get_train(data_dir,classes, input_shape, randomize, batch_size):
+    seed_value = 400
+    dataset = tf.data.Dataset.from_generator(image_generator, args = (data_dir, 
+                                                                    classes, 
+                                                                    input_shape, 
+                                                                    randomize,
+                                                                     seed_value, 
+                                                                     True, 
+                                                                     True),
+                                                            output_signature=(
+                                                                     tf.TensorSpec(shape=input_shape, dtype=tf.float32),
+                                                                     tf.TensorSpec(shape=(len(classes)), dtype=tf.float32),)
+                                            )
+    dataset = dataset.batch(batch_size)
+    return dataset
+    
