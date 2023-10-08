@@ -10,6 +10,11 @@ def search_files(folder_path, file_extension):
     found_files = glob.glob(search_pattern, recursive = True)
     return found_files
 
+def get_classes(data_dir,):
+    assert os.path.exists(data_dir), f"{data_dir} No such path or directory"
+
+    return os.listdir(f"{data_dir}/seg_train/seg_train")
+
 def image_generator(data_dir, classes, input_shape, randomize = True, seed_value = 400, get_cls = True, augment = False):
 
     if isinstance(data_dir, bytes):
@@ -57,8 +62,9 @@ def image_generator(data_dir, classes, input_shape, randomize = True, seed_value
                 yield rot_image_1/255.0, ground_truth
 
 
-def get_train(data_dir,classes, input_shape, randomize, batch_size):
-    seed_value = 400
+def get_train(data_dir, classes, input_shape, randomize, batch_size, seed_value):
+
+    data_dir = f"{data_dir}/seg_train"
     dataset = tf.data.Dataset.from_generator(image_generator, args = (data_dir, 
                                                                     classes, 
                                                                     input_shape, 
@@ -66,6 +72,40 @@ def get_train(data_dir,classes, input_shape, randomize, batch_size):
                                                                      seed_value, 
                                                                      True, 
                                                                      True),
+                                                            output_signature=(
+                                                                     tf.TensorSpec(shape=input_shape, dtype=tf.float32),
+                                                                     tf.TensorSpec(shape=(len(classes)), dtype=tf.float32),)
+                                            )
+    dataset = dataset.batch(batch_size)
+    return dataset
+
+def get_val(data_dir, classes, input_shape, randomize, batch_size, seed_value):
+    
+    data_dir = f"{data_dir}/seg_test"
+    dataset = tf.data.Dataset.from_generator(image_generator, args = (data_dir, 
+                                                                    classes, 
+                                                                    input_shape, 
+                                                                    randomize,
+                                                                     seed_value, 
+                                                                     True, 
+                                                                     False),
+                                                            output_signature=(
+                                                                     tf.TensorSpec(shape=input_shape, dtype=tf.float32),
+                                                                     tf.TensorSpec(shape=(len(classes)), dtype=tf.float32),)
+                                            )
+    dataset = dataset.batch(batch_size)
+    return dataset
+
+def get_test(data_dir,classes, input_shape, randomize, batch_size):
+    seed_value = 400
+    data_dir = f"{data_dir}/seg_pred"
+    dataset = tf.data.Dataset.from_generator(image_generator, args = (data_dir, 
+                                                                    classes, 
+                                                                    input_shape, 
+                                                                    randomize,
+                                                                     seed_value, 
+                                                                     False, 
+                                                                     False),
                                                             output_signature=(
                                                                      tf.TensorSpec(shape=input_shape, dtype=tf.float32),
                                                                      tf.TensorSpec(shape=(len(classes)), dtype=tf.float32),)

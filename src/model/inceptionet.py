@@ -60,34 +60,34 @@ class InceptionNet(Model):
     
     def call(self, inp):
 
-        network = network_layer_1(inp)
-        network = network_layer_2(network)
+        network = self.network_layer_1(inp)
+        network = self.network_layer_2(network)
         
         network = tf.nn.local_response_normalization(network,depth_radius=2,alpha=0.00002,beta=0.75)
-        network = network_layer_3(network)
-        network = network_layer_4(network)
+        network = self.network_layer_3(network)
+        network = self.network_layer_4(network)
 
         network = tf.nn.local_response_normalization(network,depth_radius=2,alpha=0.00002,beta=0.75)
-        network = network_layer_5(network)
+        network = self.network_layer_5(network)
 
-        network = network_layer_6(network)
-        network = network_layer_7(network)
+        network = self.network_layer_6(network)
+        network = self.network_layer_7(network)
 
-        network = network_layer_8(network)
-        network = network_layer_9(network)
+        network = self.network_layer_8(network)
+        network = self.network_layer_9(network)
 
-        network = network_layer_10(network)
-        network = network_layer_11(network)
+        network = self.network_layer_10(network)
+        network = self.network_layer_11(network)
 
-        network = network_layer_11(network)
-        network = network_layer_12(network)
-        network = network_layer_13(network)
-        network = network_layer_14(network)
-        network = network_layer_15(network)
-        network = network_layer_16(network)
-        network = network_layer_17(network)
-        network = network_layer_18(network)
-        network = network_layer_19(network)
-        network = network_layer_20(network)
+        network = self.network_layer_11(network)
+        network = self.network_layer_12(network)
+        network = self.network_layer_13(network)
+        network = self.network_layer_14(network)
+        network = self.network_layer_15(network)
+        network = self.network_layer_16(network)
+        network = self.network_layer_17(network)
+        network = self.network_layer_18(network)
+        network = self.network_layer_19(network)
+        network = self.network_layer_20(network)
 
         return network
