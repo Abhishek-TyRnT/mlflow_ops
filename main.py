@@ -3,6 +3,8 @@ import argparse
 from src.data.data import get_train, get_test, get_val, get_classes, search_files
 from src.model.inceptionet import InceptionNet
 from src.train import Train
+import mlflow
+import os
 
 def get_args():
     parser = argparse.ArgumentParser(description = "args for training the model")
@@ -24,6 +26,11 @@ def main(args):
     optimizer_name = args.optimizer
     epochs = args.epochs
 
+    mlflow.set_tracking_uri(uri=f'/logs/mlruns')
+    experiment = mlflow.get_experiment_by_name(name='MLFLOW_RUN')
+    experiment_id = experiment.experiment_id
+
+
     classes = get_classes(data_dir)
     train_dataset = get_train(args.data_dir,
                              classes, 
@@ -42,8 +49,8 @@ def main(args):
                         seed_value
     )
 
-    no_steps_per_epoch = len(search_files(f"{data_dir}/seg_train", ".jpg"))//batch_size
-    val_steps_per_epoch    = len(search_files(f"{data_dir}/seg_val", ".jpg"))//batch_size
+    no_steps_per_epoch  = 10 #len(search_files(f"{data_dir}/seg_train", ".jpg"))//batch_size
+    val_steps_per_epoch = 5 #len(search_files(f"{data_dir}/seg_val", ".jpg"))//batch_size
 
     
     if optimizer_name == "sgd":
@@ -54,7 +61,6 @@ def main(args):
     
     else:
         raise ValueError(f"optimizer is {optimizer_name} is unknown")
-    
 
     loss_func = tf.keras.losses.CategoricalCrossentropy()
 
@@ -70,16 +76,21 @@ def main(args):
 
     _ = model(inp)
 
-    train = Train(
-        model, 
-        loss_func, 
-        optimizer
-    )
+    with mlflow.start_run(experiment_id = experiment_id):
+        mlflow.log_param("optimizer", optimizer_name)
+        mlflow.log_param("learning_rate", args.learning_rate)
+        mlflow.log_param("model_name", args.model_name)
+        train = Train(
+            model, 
+            loss_func, 
+            optimizer
+        )
 
-    model = train.fit(train_dataset, val_dataset, epochs, no_steps_per_epoch, val_steps_per_epoch)
-    # for image, _cls in train_dataset.take(1):
-    #     y = model(image)
-    #     print(y)
+        model = train.fit(train_dataset, val_dataset, epochs, no_steps_per_epoch, val_steps_per_epoch)
+        print(model)
+        mlflow.tensorflow.log_model(
+                 model, "model", registered_model_name=args.model_name
+            )
 
 if __name__ == "__main__":
     args = get_args()

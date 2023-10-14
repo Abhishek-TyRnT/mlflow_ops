@@ -30,7 +30,7 @@ run()
             -v $HOME_DIR:/home/mlflow/project \
             -v $HOME/.kaggle:/home/mlflow/.kaggle \
             --user $(id -u) \
-            -p 8888:8888 \
+            -p 5000:5000 \
             -w /home/mlflow/project \
             --name $container_name \
             mlflow:latest

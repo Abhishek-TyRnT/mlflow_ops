@@ -22,4 +22,4 @@ else
 fi
 
 cd /logs
-mlflow ui --host 0.0.0.0
+mlflow ui --host 0.0.0.0 -p 8080

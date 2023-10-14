@@ -1,6 +1,7 @@
 import tensorflow as tf
 import time
 import sys
+import mlflow
 
 class Train:
     def __init__(self,  model, loss_func, optimizer, apply_regularization = False):
@@ -12,7 +13,7 @@ class Train:
 
     def get_data_string(self, steps, current_step, loss):
         total_bar = 50
-        increase_step = int(steps/total_bar + 0.5)
+        increase_step = max(int(steps/total_bar + 0.5), 1)
         for i in range(0,current_step+1):
             if i%increase_step == 0:
                 dashes = int(i/increase_step + 0.5)
@@ -56,6 +57,8 @@ class Train:
                 sys.stdout.write('\r' + string)
                 time.sleep(0.01)
                 step += 1
+            mlflow.log_metric("train_cat_loss", avg_loss)
+
             step = 0
             val_avg_loss = 0.
 
@@ -65,6 +68,7 @@ class Train:
                 loss   = self.loss_func(y_true,y_pred)
                 val_avg_loss = (val_avg_loss * step + loss) / (step + 1)
                 step += 1
+            mlflow.log_metric("val_cat_loss", val_avg_loss)
             string += ' Val Loss: ' + str(val_avg_loss)
             sys.stdout.write('\r' + string)
             print()

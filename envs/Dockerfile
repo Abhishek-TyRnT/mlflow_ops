@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:2.14.0rc0-gpu
+FROM tensorflow/tensorflow:2.14.0-gpu
 
 ARG USERNAME=mlflow
 ARG UID=1001
