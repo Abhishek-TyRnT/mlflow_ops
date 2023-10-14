@@ -1,0 +1,25 @@
+version: '3'
+services:
+  host:
+    image: mlflow:latest
+    container_name: mlflow_host
+    ports:
+      - 5000:5000
+    entrypoint: /bin/bash -c
+    environment:
+      - EXPERIMENT_NAME=MLFLOW_RUN
+      - DATASET_NAME=intel-image-classification.zip
+      - KAGGLE_NAME=puneet6060/intel-image-classification
+    volumes:
+      - ${MLFLOW_DIR}:/home/mlflow
+      - logs:/logs
+      - datasets:/datasets
+      - ${HOME}/.kaggle:/home/mlflow/.kaggle
+    command: /home/mlflow/scripts/setup_experiment.sh
+  
+volumes:
+  logs:
+    external: true
+  datasets:
+    external: true
+

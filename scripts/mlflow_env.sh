@@ -21,7 +21,7 @@ run()
 {
     
     result=$(docker ps -a)
-    if [[ $result == *"$container_name"* ]]; 
+    if [[ $result == *"$container_name"* ]] 
     then
         docker start -i $container_name
     else
@@ -30,6 +30,7 @@ run()
             -v $HOME_DIR:/home/mlflow/project \
             -v $HOME/.kaggle:/home/mlflow/.kaggle \
             --user $(id -u) \
+            -p 8888:8888 \
             -w /home/mlflow/project \
             --name $container_name \
             mlflow:latest
